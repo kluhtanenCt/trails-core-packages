@@ -35,7 +35,7 @@ it("Detects missing local storage", async () => {
       [MockFunction warn] {
         "calls": [
           [
-            "[WARN] @open-pioneer/local-storage/LocalStorageServiceImpl: Local storage is not supported by this browser.",
+            "[WARN] @open-pioneer/local-storage/LocalStorageServiceImpl: This browser does not support local storage.",
           ],
         ],
         "results": [
@@ -48,7 +48,7 @@ it("Detects missing local storage", async () => {
     `);
 
     expect(() => storageService.get("foo")).toThrowErrorMatchingInlineSnapshot(
-        `[Error: local-storage:not-supported: Local storage is not supported by this browser.]`
+        `[Error: local-storage:not-supported: This browser does not support local storage.]`
     );
 });
 
@@ -64,7 +64,7 @@ it("Reports errors if local storage does not work", async () => {
       [MockFunction warn] {
         "calls": [
           [
-            "[WARN] @open-pioneer/local-storage/LocalStorageServiceImpl: Local storage is not supported by this browser.",
+            "[WARN] @open-pioneer/local-storage/LocalStorageServiceImpl: This browser does not support local storage.",
             [Error: Some problem!],
           ],
         ],

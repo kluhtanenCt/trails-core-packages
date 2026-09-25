@@ -27,10 +27,8 @@ export interface SessionStorageService
 
 /**
  * The common interface implemented by {@link LocalStorageService} and {@link SessionStorageService}.
- * Use this type to write code that works with either kind of storage.
  *
- * > NOTE: This interface has no interface name. Reference `"local-storage.LocalStorageService"`
- * > or `"local-storage.SessionStorageService"` to inject a service.
+ * Use this type to write code that works with either kind of storage.
  */
 export interface StorageService extends StorageAPI {
     /**

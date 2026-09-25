@@ -9,8 +9,6 @@ const SAVE_TIMEOUT = 0;
 
 const DEFAULT_KEY = "trails-state";
 
-// NOTE: Error ids are scoped to the package, not to the kind of storage (see `Error` in
-// `@open-pioneer/core`), so session storage errors use this prefix as well.
 const ERROR_IDS = {
     CORRUPTED_DATA: "local-storage:corrupted-data",
     INVALID_PATH: "local-storage:invalid-path",
@@ -21,12 +19,7 @@ const ERROR_IDS = {
 
 /** Configures a concrete storage service implementation. */
 export interface StorageServiceConfig {
-    /**
-     * The logger used for diagnostic messages.
-     *
-     * NOTE: Must be created by the subclass' module so that messages are attributed to the
-     * concrete service, e.g. `@open-pioneer/local-storage/LocalStorageServiceImpl`.
-     */
+    /** The logger of the concrete service. */
     readonly log: Logger;
 
     /** Human readable name of the storage, in lower case (e.g. `"local storage"`). */
@@ -41,23 +34,19 @@ export interface StorageServiceConfig {
 
 /**
  * Shared implementation for services that provide access to one of the browser's storage areas.
- *
- * > NOTE for subclasses: this constructor already loads the persisted state, so it must not rely
- * > on the subclass' own field initializers (those run _after_ `super()`).
  */
 export abstract class StorageServiceImpl implements StorageService {
     // Logger of the concrete service.
     #log: Logger;
 
-    // Human readable name of the storage, used in messages ("local storage" / "Local storage").
+    // Human readable name of the storage, used in messages.
     #label: string;
-    #labelCapitalized: string;
 
     // Key in the browser storage.
     #rootKey: string;
 
     // Root value. A (possibly nested) JSON structure that is persisted into the browser storage.
-    // This value (or its children) are modified via the various `get` / `set` / `clear` / etc. methods
+    // This value (or its children) are modified via the various `get` / `set` / `removeAll` / etc. methods
     // on the service itself and on the namespace objects obtained through the service.
     #rootValue: Record<string, unknown> = {};
 
@@ -70,7 +59,6 @@ export abstract class StorageServiceImpl implements StorageService {
     constructor(options: ServiceOptions, config: StorageServiceConfig) {
         this.#log = config.log;
         this.#label = config.label;
-        this.#labelCapitalized = capitalize(config.label);
         this.#rootKey = getRootKey(options.properties, this.#log);
         this.#storage = this.#initStorage(config.getStorage);
         if (this.#storage) {
@@ -132,7 +120,7 @@ export abstract class StorageServiceImpl implements StorageService {
      * Returns `undefined` (and logs a warning) if the storage is not available.
      */
     #initStorage(getStorage: () => Storage | undefined): Storage | undefined {
-        const notSupported = `${this.#labelCapitalized} is not supported by this browser.`;
+        const notSupported = `This browser does not support ${this.#label}.`;
         if (typeof Storage === "undefined") {
             this.#log.warn(notSupported);
             return undefined;
@@ -162,7 +150,7 @@ export abstract class StorageServiceImpl implements StorageService {
             const storage = this.#storage;
             if (!storage) {
                 // Should not happen (load is called only when storage is available).
-                throw new Error(ERROR_IDS.INTERNAL, `${this.#labelCapitalized} is not available.`);
+                throw new Error(ERROR_IDS.INTERNAL, `Storage is not available.`);
             }
 
             const json = storage.getItem(this.#rootKey);
@@ -201,7 +189,7 @@ export abstract class StorageServiceImpl implements StorageService {
             const storage = this.#storage;
             if (!storage) {
                 // Should not happen (setting values is only possible if supported).
-                throw new Error(ERROR_IDS.INTERNAL, `${this.#labelCapitalized} is not available.`);
+                throw new Error(ERROR_IDS.INTERNAL, `Storage is not available.`);
             }
 
             const json = JSON.stringify(this.#rootValue);
@@ -216,7 +204,7 @@ export abstract class StorageServiceImpl implements StorageService {
         if (!root) {
             throw new Error(
                 ERROR_IDS.NOT_SUPPORTED,
-                `${this.#labelCapitalized} is not supported by this browser.`
+                `This browser does not support ${this.#label}.`
             );
         }
         return root;
@@ -302,11 +290,6 @@ class StorageNamespaceImpl implements StorageNamespace {
 
         return new StorageNamespaceImpl(this.#path.concat([key]), this.#access);
     }
-}
-
-function capitalize(text: string): string {
-    // NOTE: charAt() instead of [0] because of `noUncheckedIndexedAccess`.
-    return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 /**

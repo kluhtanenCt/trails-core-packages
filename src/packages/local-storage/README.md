@@ -133,11 +133,10 @@ const Element = createCustomElement({
 
 Each service manages its data as a single, hierarchical JSON object.
 This JSON object is loaded from and saved to the respective browser storage area using the `storageId` key.
+Both use the `storageId` key in their respective storage object.
 
 The top level value is always an object; its properties are manipulated when calling `get`, `set` etc. on the service.
 Nested values can be arbitrary (JSON-compatible) values.
-
-Because both services are provided by the `local-storage` package, their interface names and error ids share the `local-storage` prefix.
 
 ## License
 

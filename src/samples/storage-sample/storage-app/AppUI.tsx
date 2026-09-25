@@ -38,12 +38,6 @@ export function AppUI() {
                             Open the sample in a second tab to see that local storage is shared
                             while session storage is not.
                         </li>
-                        <Box as="ul" listStyleType="square" listStylePosition="inside">
-                            <li>
-                                Note: Duplicate tab to see that session storage gets copied, but is
-                                not shared and changes independently afterwards.
-                            </li>
-                        </Box>
                     </Box>
                 </Box>
 
@@ -77,7 +71,7 @@ function StoragePanel({ title, service, area }: StoragePanelProps) {
     const [error, setError] = useState<string | undefined>(undefined);
 
     const refresh = useCallback(() => {
-        window.setTimeout(() => setRaw(area.getItem(STORAGE_ID) ?? undefined), 10);
+        setRaw(area.getItem(STORAGE_ID) ?? undefined);
     }, [area]);
 
     useEffect(() => {
@@ -91,7 +85,11 @@ function StoragePanel({ title, service, area }: StoragePanelProps) {
         } catch (e) {
             setError(String(e));
         }
-        refresh();
+
+        // Storage service debounces the actual save operation
+        setTimeout(() => {
+            refresh();
+        }, 10);
     };
 
     return (

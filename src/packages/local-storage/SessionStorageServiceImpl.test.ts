@@ -38,7 +38,7 @@ it("Detects missing session storage", async () => {
       [MockFunction warn] {
         "calls": [
           [
-            "[WARN] @open-pioneer/local-storage/SessionStorageServiceImpl: Session storage is not supported by this browser.",
+            "[WARN] @open-pioneer/local-storage/SessionStorageServiceImpl: This browser does not support session storage.",
           ],
         ],
         "results": [
@@ -50,9 +50,8 @@ it("Detects missing session storage", async () => {
       }
     `);
 
-    // NOTE: Error ids are scoped to the package, so they use the `local-storage` prefix.
     expect(() => storageService.get("foo")).toThrowErrorMatchingInlineSnapshot(
-        `[Error: local-storage:not-supported: Session storage is not supported by this browser.]`
+        `[Error: local-storage:not-supported: This browser does not support session storage.]`
     );
 });
 
@@ -68,7 +67,7 @@ it("Reports errors if session storage does not work", async () => {
       [MockFunction warn] {
         "calls": [
           [
-            "[WARN] @open-pioneer/local-storage/SessionStorageServiceImpl: Session storage is not supported by this browser.",
+            "[WARN] @open-pioneer/local-storage/SessionStorageServiceImpl: This browser does not support session storage.",
             [Error: Some problem!],
           ],
         ],
