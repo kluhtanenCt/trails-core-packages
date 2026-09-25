@@ -2,21 +2,10 @@
 "@open-pioneer/local-storage": minor
 ---
 
-Add a new `SessionStorageService`, which provides the same API as the existing `LocalStorageService`, but for [session storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) instead.
-Reference the interface name `local-storage.SessionStorageService` to inject an instance of the service:
+Add a new `SessionStorageService` based on the browser's [session storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage).
+The new service has the same API as the `LocalStorageService`.
 
-```js
-// build.config.mjs
-export default defineBuildConfig({
-    services: {
-        MyService: {
-            references: {
-                sessionStorage: "local-storage.SessionStorageService"
-            }
-        }
-    }
-});
-```
+Reference the interface name `local-storage.SessionStorageService` to inject an instance of the new service.
 
-Both services read the `storageId` package property and use that key in their respective storage area.
-The storage API types have been renamed to storage-kind-neutral names: `StorageAPI`, `StorageNamespace`, `StorageProperties` and the new common interface `StorageService`. The previous names `LocalStorageAPI`, `LocalStorageNamespace` and `LocalStorageProperties` remain exported as deprecated aliases, so no changes are required in existing code.
+The storage API types have been renamed to storage-kind-neutral names: `StorageAPI`, `StorageNamespace`, `StorageProperties` and the new common interface `StorageService`.
+The previous names `LocalStorageAPI`, `LocalStorageNamespace` and `LocalStorageProperties` are still valid, but have been marked as deprecated.
